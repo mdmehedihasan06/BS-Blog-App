@@ -51,12 +51,12 @@ namespace BSBlogApp.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, posts);
         }
 
-        [Route("api/Posts/SearchResult")]
-        [HttpPost]
+        [Route("api/Posts/SearchResult/{searchString}")]
+        [HttpGet]
         public HttpResponseMessage SearchResult(string searchString)
         {
             var posts = (from post in db.Posts
-                         where post.PostTitle == searchString
+                         where post.PostTitle.Contains(searchString)
                          select new
                          {
                              post.PostTitle,

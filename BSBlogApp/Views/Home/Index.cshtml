@@ -27,21 +27,20 @@
                 BuildGrid(data);
             }, 'json');
 
-            //$('#btn-search').on('click', function () {
-            //    $.ajax({
-            //        type: "POST",
-            //        url: "/api/Posts/SearchResult",
-            //        data: JSON.stringify({ searchString: $("#searchText").val() }),
-            //        contentType: "application/json; charset=utf-8",
-            //        dataType: "json",
-            //        success: function (response) {
-            //            console.log(response);                        
-            //        },
-            //        error: function (jqXHR, textStatus, errorThrown) {
-            //            console.log(jqXHR.responseText);
-            //        }
-            //    });
-            //});
+            $('#btn-search').on('click', function () {
+                $.ajax({
+                    type: "GET",
+                    url: "/api/Posts/SearchResult/" + $("#searchText").val(),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        BuildGrid(response);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(jqXHR.responseText);
+                    }
+                });
+            });
 
         });
 
