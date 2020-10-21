@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="BSBlogAppDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="AppUsers">
+    <Key>
+      <PropertyRef Name="UserId" />
+    </Key>
+    <Property Name="UserId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="UserName" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="Password" Type="varchar" MaxLength="100" Nullable="false" />
+    <Property Name="DateCreated" Type="datetime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Comments">
+    <Key>
+      <PropertyRef Name="CommentId" />
+    </Key>
+    <Property Name="CommentId" Type="int" Nullable="false" />
+    <Property Name="PostID" Type="int" Nullable="false" />
+    <Property Name="CommentedBy" Type="int" Nullable="false" />
+    <Property Name="CommentDescription" Type="varchar(max)" />
+    <Property Name="CommentDate" Type="datetime" />
+  </EntityType>
+  <EntityType Name="CommentStats">
+    <Key>
+      <PropertyRef Name="StatId" />
+    </Key>
+    <Property Name="StatId" Type="int" Nullable="false" />
+    <Property Name="CommentID" Type="int" Nullable="false" />
+    <Property Name="LikeCount" Type="bit" />
+    <Property Name="DislikeCount" Type="bit" />
+  </EntityType>
+  <EntityType Name="Posts">
+    <Key>
+      <PropertyRef Name="PostId" />
+    </Key>
+    <Property Name="PostId" Type="int" Nullable="false" />
+    <Property Name="PostTitle" Type="varchar" MaxLength="500" Nullable="false" />
+    <Property Name="PostDescription" Type="varchar(max)" />
+    <Property Name="Author" Type="int" Nullable="false" />
+    <Property Name="DatePosted" Type="datetime" />
+  </EntityType>
+  <Association Name="FK_Comments_Posts">
+    <End Role="Posts" Type="Self.Posts" Multiplicity="1" />
+    <End Role="Comments" Type="Self.Comments" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Posts">
+        <PropertyRef Name="PostId" />
+      </Principal>
+      <Dependent Role="Comments">
+        <PropertyRef Name="PostID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Comments_Users">
+    <End Role="AppUsers" Type="Self.AppUsers" Multiplicity="1" />
+    <End Role="Comments" Type="Self.Comments" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="AppUsers">
+        <PropertyRef Name="UserId" />
+      </Principal>
+      <Dependent Role="Comments">
+        <PropertyRef Name="CommentedBy" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_CommentStats_Comments">
+    <End Role="Comments" Type="Self.Comments" Multiplicity="1" />
+    <End Role="CommentStats" Type="Self.CommentStats" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Comments">
+        <PropertyRef Name="CommentId" />
+      </Principal>
+      <Dependent Role="CommentStats">
+        <PropertyRef Name="CommentID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Posts_Users">
+    <End Role="AppUsers" Type="Self.AppUsers" Multiplicity="1" />
+    <End Role="Posts" Type="Self.Posts" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="AppUsers">
+        <PropertyRef Name="UserId" />
+      </Principal>
+      <Dependent Role="Posts">
+        <PropertyRef Name="Author" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="BSBlogAppDBModelStoreContainer">
+    <EntitySet Name="AppUsers" EntityType="Self.AppUsers" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Comments" EntityType="Self.Comments" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="CommentStats" EntityType="Self.CommentStats" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Posts" EntityType="Self.Posts" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK_Comments_Posts" Association="Self.FK_Comments_Posts">
+      <End Role="Posts" EntitySet="Posts" />
+      <End Role="Comments" EntitySet="Comments" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Comments_Users" Association="Self.FK_Comments_Users">
+      <End Role="AppUsers" EntitySet="AppUsers" />
+      <End Role="Comments" EntitySet="Comments" />
+    </AssociationSet>
+    <AssociationSet Name="FK_CommentStats_Comments" Association="Self.FK_CommentStats_Comments">
+      <End Role="Comments" EntitySet="Comments" />
+      <End Role="CommentStats" EntitySet="CommentStats" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Posts_Users" Association="Self.FK_Posts_Users">
+      <End Role="AppUsers" EntitySet="AppUsers" />
+      <End Role="Posts" EntitySet="Posts" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

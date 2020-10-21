@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="BSBlogAppDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Comment">
+    <Key>
+      <PropertyRef Name="CommentId" />
+    </Key>
+    <Property Name="CommentId" Type="Int32" Nullable="false" />
+    <Property Name="PostID" Type="Int32" Nullable="false" />
+    <Property Name="CommentedBy" Type="Int32" Nullable="false" />
+    <Property Name="CommentDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Name="CommentDate" Type="DateTime" Precision="3" />
+    <NavigationProperty Name="Post" Relationship="Self.FK_Comments_Posts" FromRole="Comments" ToRole="Posts" />
+    <NavigationProperty Name="CommentStats" Relationship="Self.FK_CommentStats_Comments" FromRole="Comments" ToRole="CommentStats" />
+    <NavigationProperty Name="AppUser" Relationship="BSBlogAppDBModel.FK_Comments_Users1" FromRole="Comment" ToRole="AppUser" />
+  </EntityType>
+  <EntityType Name="CommentStat">
+    <Key>
+      <PropertyRef Name="StatId" />
+    </Key>
+    <Property Name="StatId" Type="Int32" Nullable="false" />
+    <Property Name="CommentID" Type="Int32" Nullable="false" />
+    <Property Name="LikeCount" Type="Boolean" />
+    <Property Name="DislikeCount" Type="Boolean" />
+    <NavigationProperty Name="Comment" Relationship="Self.FK_CommentStats_Comments" FromRole="CommentStats" ToRole="Comments" />
+  </EntityType>
+  <EntityType Name="Post">
+    <Key>
+      <PropertyRef Name="PostId" />
+    </Key>
+    <Property Name="PostId" Type="Int32" Nullable="false" />
+    <Property Name="PostTitle" Type="String" MaxLength="500" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="PostDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Name="Author" Type="Int32" Nullable="false" />
+    <Property Name="DatePosted" Type="DateTime" Precision="3" />
+    <NavigationProperty Name="Comments" Relationship="Self.FK_Comments_Posts" FromRole="Posts" ToRole="Comments" />
+    <NavigationProperty Name="AppUser" Relationship="BSBlogAppDBModel.FK_Posts_Users1" FromRole="Post" ToRole="AppUser" />
+  </EntityType>
+  <Association Name="FK_Comments_Posts">
+    <End Role="Posts" Type="Self.Post" Multiplicity="1" />
+    <End Role="Comments" Type="Self.Comment" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Posts">
+        <PropertyRef Name="PostId" />
+      </Principal>
+      <Dependent Role="Comments">
+        <PropertyRef Name="PostID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_CommentStats_Comments">
+    <End Role="Comments" Type="Self.Comment" Multiplicity="1" />
+    <End Role="CommentStats" Type="Self.CommentStat" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Comments">
+        <PropertyRef Name="CommentId" />
+      </Principal>
+      <Dependent Role="CommentStats">
+        <PropertyRef Name="CommentID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="BSBlogAppDBEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Comments" EntityType="Self.Comment" />
+    <EntitySet Name="CommentStats" EntityType="Self.CommentStat" />
+    <EntitySet Name="Posts" EntityType="Self.Post" />
+    <AssociationSet Name="FK_Comments_Posts" Association="Self.FK_Comments_Posts">
+      <End Role="Posts" EntitySet="Posts" />
+      <End Role="Comments" EntitySet="Comments" />
+    </AssociationSet>
+    <AssociationSet Name="FK_CommentStats_Comments" Association="Self.FK_CommentStats_Comments">
+      <End Role="Comments" EntitySet="Comments" />
+      <End Role="CommentStats" EntitySet="CommentStats" />
+    </AssociationSet>
+    <EntitySet Name="AppUsers" EntityType="BSBlogAppDBModel.AppUser" />
+    <AssociationSet Name="FK_Comments_Users1" Association="BSBlogAppDBModel.FK_Comments_Users1">
+      <End Role="AppUser" EntitySet="AppUsers" />
+      <End Role="Comment" EntitySet="Comments" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Posts_Users1" Association="BSBlogAppDBModel.FK_Posts_Users1">
+      <End Role="AppUser" EntitySet="AppUsers" />
+      <End Role="Post" EntitySet="Posts" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="AppUser">
+    <Key>
+      <PropertyRef Name="UserId" />
+    </Key>
+    <Property Name="UserId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="UserName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="Password" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
+    <NavigationProperty Name="Comments" Relationship="BSBlogAppDBModel.FK_Comments_Users1" FromRole="AppUser" ToRole="Comment" />
+    <NavigationProperty Name="Posts" Relationship="BSBlogAppDBModel.FK_Posts_Users1" FromRole="AppUser" ToRole="Post" />
+  </EntityType>
+  <Association Name="FK_Comments_Users1">
+    <End Type="BSBlogAppDBModel.AppUser" Role="AppUser" Multiplicity="1" />
+    <End Type="BSBlogAppDBModel.Comment" Role="Comment" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="AppUser">
+        <PropertyRef Name="UserId" />
+      </Principal>
+      <Dependent Role="Comment">
+        <PropertyRef Name="CommentedBy" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Posts_Users1">
+    <End Type="BSBlogAppDBModel.AppUser" Role="AppUser" Multiplicity="1" />
+    <End Type="BSBlogAppDBModel.Post" Role="Post" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="AppUser">
+        <PropertyRef Name="UserId" />
+      </Principal>
+      <Dependent Role="Post">
+        <PropertyRef Name="Author" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>

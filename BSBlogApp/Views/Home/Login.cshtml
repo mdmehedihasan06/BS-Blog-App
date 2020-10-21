@@ -1,0 +1,118 @@
+﻿
+@{
+    Layout = null;
+
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta charset="utf-8" />
+    <title>Login</title>
+    @Styles.Render("~/Content/css")
+    <style>
+        body {
+            background: #eee !important;
+        }
+
+        .wrapper {
+            margin-top: 80px;
+            margin-bottom: 80px;
+        }
+
+        .form-signin {
+            max-width: 380px;
+            padding: 15px 35px 45px;
+            margin: 0 auto;
+            background-color: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+            .form-signin .form-signin-heading,
+            .form-signin .checkbox {
+                margin-bottom: 30px;
+            }
+
+            .form-signin .checkbox {
+                font-weight: normal;
+            }
+
+            .form-signin .form-control {
+                position: relative;
+                font-size: 16px;
+                height: auto;
+                padding: 10px;
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+            }
+
+                .form-signin .form-control:focus {
+                    z-index: 2;
+                }
+
+            .form-signin input[type="text"] {
+                margin-bottom: -1px;
+                border-bottom-left-radius: 0;
+                border-bottom-right-radius: 0;
+            }
+
+            .form-signin input[type="password"] {
+                margin-bottom: 20px;
+                border-top-left-radius: 0;
+                border-top-right-radius: 0;
+            }
+    </style>
+    <link href="~/Content/parsley.css" rel="stylesheet" />
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="wrapper">
+        <form class="form-signin" id="form-signin" >
+            <h2 class="form-signin-heading">Please login</h2>
+            <input type="text" class="form-control" name="username" id="username" placeholder="Username" required="" autofocus="" />
+            <input type="password" class="form-control" name="password" id="password" placeholder="Password" required="" />
+            <button class="btn btn-lg btn-primary btn-block" type="button" id="btn-login">Login</button>
+        </form>
+    </div>
+    <div id="result">
+
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    <script src="~/Scripts/parsley.min.js"></script>
+    <script>
+        $('#form-signin').parsley();
+        $('#btn-login').on('click', function () {
+            if ($('#form-signin').parsley().validate()) {
+                var user = JSON.stringify({
+                    UserName: $('#username').val(),
+                    Password: $('#password').val(),
+                })
+                $.ajax({
+                    type: "POST",
+                    url: "/api/Users/Login",
+                    data: user,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        if (response === 'Ok') {
+                            window.location.replace("/Home/Index");
+                        } else {
+                            alert("Provided credentials are not correct! Please try with correct credentials.")
+                        }
+
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(jqXHR.responseText);
+                    }
+                });                
+            }
+
+        });
+    </script>
+</body>
+</html>

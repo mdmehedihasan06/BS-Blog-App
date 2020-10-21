@@ -1,0 +1,56 @@
+﻿<div class="container">
+
+    <form>
+        <div class="row" style="margin-top: 50px;">
+            <div class="col-xs-4">
+                <input type="text" class="form-control" />
+            </div>
+            <div class="col-xs-3">
+                <button type="button" class="btn btn-primary">Search</button>
+            </div>
+        </div>
+    </form>
+    <br />
+    <div class="row">
+        <div class="col">
+            <table class="table table-bordered">
+                <tbody id="result"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $.get('/api/Posts/PostGrid', function (data) {
+                console.log(data);
+
+                $('#result').empty();
+                $.each(data, function (i, v) {
+                    console.log(v);
+                    var string = '<tr style="color: dodgerblue;">' +
+                                    '<td>' + v.PostTitle + '</td>' +
+                                    '<td>' + v.Author + '</td>' +
+                                    '<td>' + v.DatePosted + '</td>' +
+                                    '<td>' + v.commentsCount + ' comment' + (v.commentsCount > 1 ? "s" : "") + '</td>' +
+                                '</tr>';
+                    if (v.commentsCount > 0) {
+                        $.each(v.comments, function (m, n) {
+                            var cstring = '<tr>' +
+                                    '<td>' + n.CommentDescription + '</td>' +
+                                    '<td>' + n.CommentedBy + '</td>' +
+                                    '<td>' + n.CommentDate + '</td>' +
+                                    '<td><span class="glyphicon glyphicon-chevron-up"></span> ' + n.likeCount + ' <span class="glyphicon glyphicon-chevron-down"></span> ' + n.dislikeCount + '</td>' +
+                                '</tr>';
+                            string = string + cstring;
+                        })
+                    }
+
+                    $('#result').html($('#result').html() + string + '');
+                });
+            }, 'json');
+        });
+
+    </script>
+}
