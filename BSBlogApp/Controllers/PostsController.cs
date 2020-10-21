@@ -23,7 +23,7 @@ namespace BSBlogApp.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, db.Posts.ToList());
         }
 
-        // GET: api/Posts
+        
         [Route("api/Posts/PostGrid")]
         [HttpGet]
         public HttpResponseMessage PostGrid()
@@ -34,8 +34,7 @@ namespace BSBlogApp.Controllers
                              post.PostTitle,
                              Author = post.AppUser.UserName,
                              post.DatePosted,
-                             commentsCount = post.Comments.Count(),
-                             //comments = db.Comments.Where(m => m.PostID == post.PostId).ToList()                            
+                             commentsCount = post.Comments.Count(),                         
                              comments = (
                              from comment in db.Comments
                              where comment.PostID == post.PostId
@@ -49,18 +48,34 @@ namespace BSBlogApp.Controllers
                              }
                              ).ToList()
                          }).ToList();
+            return Request.CreateResponse(HttpStatusCode.OK, posts);
+        }
 
-            //var c = from comment in db.Comments
-            //        where comment.PostID == 1
-            //        select new
-            //        {
-            //            comment.CommentDescription,
-            //            CommentedBy = comment.AppUser.UserName,
-            //            comment.CommentDate,
-            //            likeCount = comment.CommentStats.Where(m => m.CommentID == comment.CommentId && m.LikeCount == true).Count(),
-            //            dislikeCount = comment.CommentStats.Where(m => m.CommentID == comment.CommentId && m.DislikeCount == true).Count()
-            //        };
-
+        [Route("api/Posts/SearchResult")]
+        [HttpPost]
+        public HttpResponseMessage SearchResult(string searchString)
+        {
+            var posts = (from post in db.Posts
+                         where post.PostTitle == searchString
+                         select new
+                         {
+                             post.PostTitle,
+                             Author = post.AppUser.UserName,
+                             post.DatePosted,
+                             commentsCount = post.Comments.Count(),
+                             comments = (
+                             from comment in db.Comments
+                             where comment.PostID == post.PostId
+                             select new
+                             {
+                                 comment.CommentDescription,
+                                 CommentedBy = comment.AppUser.UserName,
+                                 comment.CommentDate,
+                                 likeCount = comment.CommentStats.Where(m => m.CommentID == comment.CommentId && m.LikeCount == true).Count(),
+                                 dislikeCount = comment.CommentStats.Where(m => m.CommentID == comment.CommentId && m.DislikeCount == true).Count()
+                             }
+                             ).ToList()
+                         }).ToList();
             return Request.CreateResponse(HttpStatusCode.OK, posts);
         }
 
